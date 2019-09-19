@@ -11,24 +11,22 @@ import time
 import pyLDAvis
 import pyLDAvis.gensim
 import matplotlib.pyplot as plt
-%matplotlib inline
 import warnings
 warnings.filterwarnings('ignore')
 import pickle
 
 
-# Note that raw docs is a numpy array. 
-# Example element is: 
-# 'Logical Disk Free Space is low, Description: The disk C: on computer sjcphxstg02.strykercorp.com is running out of disk space. The values that exceeded the thre'
-raw_docs = pickle.load(open('short_description.pkl','rb'))
-
-
-def lda_model_multi_level(raw_docs, 
+def lda_model_multi_level(
 				level, 
-				num_topics_list_level_1, num_topics_list_level_2=[], num_topics_list_level_3=[], 
+				num_topics_list_level_1, 
+				raw_docs,
 				coherence='c_v', 
-				need_best_topic=True, model_selection_metric='coherence',
-				debug):
+				debug=False,
+				need_best_topic=True, 
+				model_selection_metric='coherence',
+				num_topics_list_level_2=[], 
+				num_topics_list_level_3=[]
+				):
 	'''
 	- level:
 		0 - means first level, i.e. only on the documents
@@ -68,7 +66,7 @@ def lda_model_multi_level(raw_docs,
 	coherence_list = np.array(coherence_list)
 	perplexity_list = np.array(perplexity_list)
 	
-	if (need_best_topic = True):
+	if (need_best_topic == True):
 		coherence_index = np.argmax(coherence_list)
 		perplexity_index = np.argmin(perplexity_list)
 
@@ -127,7 +125,7 @@ def lda_model_multi_level(raw_docs,
 		coherence_list_level_2 = np.array(coherence_list_level_2)
 		perplexity_list_level_2 = np.array(perplexity_list_level_2)
 		
-		if (need_best_topic = True):
+		if (need_best_topic == True):
 			coherence_index = np.argmax(coherence_list_level_2)
 			perplexity_index = np.argmin(perplexity_list_level_2)
 

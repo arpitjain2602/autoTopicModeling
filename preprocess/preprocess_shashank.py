@@ -57,28 +57,44 @@ def BinarySearch(a, x):
 
 
 
-def to_dictionary_and_corpus(data, fe_no_below=1, fe_no_above=0.05, fe_keep_n=50000):
+def to_dictionary_and_corpus(data, fe_no_below=1, fe_no_above=0.05, fe_keep_n=50000, debug=False):
     #converts the data to a dictionary and corpus
     
     total_start = time.time()
     dictionary = corpora.Dictionary(data)
     dictionary_created = time.time()
-    print("Dictionary created in ",dictionary_created- total_start)
+    if(debug):
+        print("Dictionary created in ",dictionary_created- total_start)
     
     dictionary.filter_extremes(no_below=fe_no_below, no_above=fe_no_above, keep_n=fe_keep_n)
     dictionary_filtered = time.time()
-    print("Dictionary filtered in ",dictionary_filtered-dictionary_created)
+    if(debug):
+        print("Dictionary filtered in ",dictionary_filtered-dictionary_created)
     corpus = [dictionary.doc2bow(doc) for doc in data]
     corpus_created = time.time()
-    print("Corpus created in ",corpus_created-dictionary_filtered)
+    if(debug):
+        print("Corpus created in ",corpus_created-dictionary_filtered)
     
     total_end = time.time()
-    print('Total Time Taken ', total_end-total_start)
+    if(debug):
+        print('Total Time Taken ', total_end-total_start)
     return dictionary, corpus
 
 
 
-def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal = True, whitespace_removal = True, store_alphanumeric = True, tokenization_nltk = False, lemmatization_tokenization_spacy = True, stopwords_removal_nltk = True, stopwords_removal_spacy = True, make_bigrams_gensim = True, bigrams_min_count = 5, bigrams_threshold = 15, make_trigrams_gensim = True, trigrams_min_count = 5, trigrams_threshold = 15,  min_max_length_removal = True, mmlr_min_len = 3, mmlr_max_len = 50, mmlr_deacc = False,  pos_removal_nltk = True, debug = False):
+def preprocessing_docs_shashank(data, 
+                make_lowercase = True, 
+                punctuation_removal = True, 
+                whitespace_removal = True, 
+                store_alphanumeric = True, 
+                tokenization_nltk = False, 
+                lemmatization_tokenization_spacy = True, 
+                stopwords_removal_nltk = True, stopwords_removal_spacy = True, 
+                make_bigrams_gensim = True, bigrams_min_count = 5, bigrams_threshold = 15, 
+                make_trigrams_gensim = True, trigrams_min_count = 5, trigrams_threshold = 15,  
+                min_max_length_removal = True, mmlr_min_len = 3, mmlr_max_len = 50, mmlr_deacc = False, 
+                pos_removal_nltk = True, 
+                debug = False):
     #args: True False args are used to toggle the respective processing techniques
     #spell check should be added to this
     #each toggle includes the name of the library, if used
@@ -96,7 +112,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         start = time.time()
         data = [i.lower() for i in data]
         end = time.time()
-        print('\n ##### Lowercasing Done! Time Taken - ',end-start)
+        print('\n       ##### Lowercasing Done! Time Taken - ',end-start)
         #returns a list of sentences
     
     if (punctuation_removal is True):
@@ -107,7 +123,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         data = [i.translate(str.maketrans(string.punctuation,' '*len(string.punctuation))) for i in data]
         #returns a list of sentences
         end = time.time()
-        print('\n ##### Punctuation removed! Time Taken - ',end-start)
+        print('\n       ##### Punctuation removed! Time Taken - ',end-start)
         #returns a list of sentences
     
     if (whitespace_removal is True):
@@ -118,7 +134,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         data = [' '.join(mystring.split()) for mystring in data]
 #         data = [i.strip() for i in data]
         end = time.time()
-        print('\n ##### Whitespace removed! Time Taken - ',end-start)
+        print('\n       ##### Whitespace removed! Time Taken - ',end-start)
         print(' ')
     
     
@@ -135,12 +151,13 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         count = 0
         for doc in data:
             if(count%2000 == 0):
-                print(count*100.0/len(data),"% Done")
+                if(debug):
+                    print(count*100.0/len(data),"% Done")
             count += 1
             new_data.append(" ".join([token[0] for token in nltk.pos_tag(doc.split()) if not token[1] in pos_removal_nltk_list]))
         data = new_data
         end = time.time()
-        print('\n ##### POS Removal Done! Time Taken - ',end-start)
+        print('\n       ##### POS Removal Done! Time Taken - ',end-start)
         print(' ')
 
     
@@ -155,7 +172,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
             alpha_numeric_word_list.append(rx.findall(sentence))
         alpha_numeric_word_list = [[x for x in alpha_numeric_word_item if not (x.isdigit() or x[0] == '-' and x[1:].isdigit())] for alpha_numeric_word_item in alpha_numeric_word_list]
         end = time.time()
-        print('\n ##### Alphanumeric Words Stored! Time Taken - ',end-start)
+        print('\n       ##### Alphanumeric Words Stored! Time Taken - ',end-start)
         print(' ')
         
     if (tokenization_nltk == True):
@@ -168,7 +185,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         end = time.time()
         # Using Spacy - Spacy takes too much time
         #data = [[token.text for token in nlp_spacy(i)] for i in data]
-        print('\n ##### Tokenization Done using NLTK! Time Taken - ', end-start)
+        print('\n       ##### Tokenization Done using NLTK! Time Taken - ', end-start)
         print(' ')
 
     if (lemmatization_tokenization_spacy == True):
@@ -183,14 +200,15 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         j = 0
         for doc in data:
             if(j%2000 == 0):
-                print(j*100.0/len(data), "% done")
+                if(debug):
+                    print(j*100.0/len(data), "% done")
             j+=1
             new_data.append([i.lemma_ for i in nlp_spacy(doc)])
         data = new_data
         # NLTK Lemmatizer
         #data = [[nltk_lemmatizer.lemmatize(j) for j in doc] for doc in data]
         end = time.time()
-        print('\n ##### Lemmatization and Tokenization Done using Spacy! Time Taken - ',end-start)
+        print('\n       ##### Lemmatization and Tokenization Done using Spacy! Time Taken - ',end-start)
         print(' ')
 
     if (stopwords_removal_nltk == True):
@@ -202,7 +220,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         data = [[j for j in doc if (BinarySearch(stop_words_nltk,j)<0)] for doc in data]
         data = [[x for x in word if not (x.isdigit() or x[0] == '-' and x[1:].isdigit())] for word in data]
         end = time.time()
-        print('\n ##### Stopwords Removed using NLTK! Time Taken - ',end-start)
+        print('\n       ##### Stopwords Removed using NLTK! Time Taken - ',end-start)
         print(' ')
         
     if (stopwords_removal_spacy == True):
@@ -215,14 +233,15 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         new_data = list()
         for doc in data:
             if(counter%1000 == 0):
-                print(counter*100.0/len(data), "% done")
+                if(debug):
+                    print(counter*100.0/len(data), "% done")
             counter += 1
             new_data.append([string(j) for word in doc for j in nlp_spacy(word) if not j.is_stop ])
             if(counter<2):
                 print(new_data)
         data = new_data#[[j for word in doc for j in nlp_spacy(word) if not j.is_stop ] for doc in data]
         end = time.time()
-        print('\n ##### Stopwords Removed using Spacy! Time Taken - ',end-start)
+        print('\n       ##### Stopwords Removed using Spacy! Time Taken - ',end-start)
         print(' ')
     
     if (make_bigrams_gensim == True):  
@@ -234,7 +253,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         bigram = gensim.models.phrases.Phrases(data, min_count=bigrams_min_count, threshold=bigrams_threshold)
         data = [bigram[doc] for doc in data]
         end = time.time()
-        print('\n ##### Bi-Grams made using Gensim! Time Taken - ',end-start)
+        print('\n       ##### Bi-Grams made using Gensim! Time Taken - ',end-start)
         print(' ')
     
     if (make_trigrams_gensim == True):  
@@ -246,7 +265,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         trigram = gensim.models.phrases.Phrases(data, min_count=trigrams_min_count, threshold=trigrams_threshold)
         data = [trigram[doc] for doc in data]
         end = time.time()
-        print('\n ##### Tri-Grams made using Gensim! Time Taken - ',end-start)
+        print('\n       ##### Tri-Grams made using Gensim! Time Taken - ',end-start)
         print(' ')
     
     if (min_max_length_removal == True):
@@ -257,7 +276,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         start = time.time()
         data = [simple_preprocess(' '.join(doc), min_len=mmlr_min_len, max_len=mmlr_max_len, deacc=mmlr_deacc) for doc in data] 
         end = time.time()
-        print('\n ##### Min_Max Word Length Removal Done using Gensim! Time Taken - ',end-start)
+        print('\n       ##### Min_Max Word Length Removal Done using Gensim! Time Taken - ',end-start)
         print(' ')
     
         
@@ -273,7 +292,7 @@ def preprocessing_docs_shashank(data, make_lowercase = True, punctuation_removal
         print(len(alpha_numeric_word_list))
         data = [data[i] + alpha_numeric_word_list[i] for i in range(len(data))]
         end = time.time()
-        print('\n ##### Alphanumeric Words added back to the text! Time Taken - ',end-start)
+        print('\n       ##### Alphanumeric Words added back to the text! Time Taken - ',end-start)
     
     total_end = time.time()
     print('Total Time Taken ', total_end-total_start)
