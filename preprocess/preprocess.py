@@ -1,5 +1,5 @@
-from preprocess.preprocess_arpit import *
-from preprocess.preprocess_shashank import *
+from preprocess.arpit import *
+from preprocess.shashank import *
 import time
 import pickle
 
