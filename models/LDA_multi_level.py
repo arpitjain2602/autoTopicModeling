@@ -116,7 +116,7 @@ def lda_model_multi_level(
 	perplexity_score = perplexity_list[best_topic_index]
 	best_lda_model_level_1 = lda_models_level_1[best_topic]
 
-	lda_level_1 = {'best_lda_model': best_lda_model,
+	lda_level_1 = {'best_lda_model': best_lda_model_level_1,
 							'best_topic': best_topic,
 							'coherence_score': coherence_score,
 							'perplexity_score': perplexity_score,
@@ -131,7 +131,7 @@ def lda_model_multi_level(
 
 	# ------------------------------------------------------------------------------------------------------------------------
 	print('### Running process for Level-2')
-	lda_corpus = lbest_lda_model_level_1[corpus]
+	lda_corpus = best_lda_model_level_1[corpus]
 	lda_corpus_max_topic = [max(doc[0], key=operator.itemgetter(1))[0] for doc in lda_corpus]
 
 	corpus_cluster = [list() for i in range(best_topic)]
